@@ -1,52 +1,37 @@
-name: Deploy to AWS EC2
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main # main 브랜치에 push가 발생할 때 실행
+      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 리포지토리 체크아웃
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # 2. Node.js 설정
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
+    - name: Package application
+      run: zip -r app.zip .
 
-      # 3. 의존성 설치 및 빌드
-      - name: Install dependencies and build
-        run: |
-          npm install
-          npm run build
+    - name: Deploy to EC2
+      env:
+        HOST: ${{ secrets.AWS_EC2_HOST }}
+        USERNAME: ${{ secrets.AWS_EC2_USER }}
+        PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+      run: |
+        APP_PATH="/home/ec2-user/Program/Virtual Dehkartes"
 
-      # 4. 빌드 파일 압축
-      - name: Zip build folder
-        run: zip -r build.zip dist/
+        echo "Connecting to EC2 instance..."
+        scp -o "StrictHostKeyChecking=no" -i "$PRIVATE_KEY" app.zip $USERNAME@$HOST:$APP_PATH/app.zip
 
-      # 5. 빌드 파일 배포
-      - name: Deploy to AWS EC2
-        uses: appleboy/scp-action@v0.1.5
-        with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_PRIVATE_KEY }}
-          source: build.zip
-          target: /home/ec2-user/Program/Fractarium
-
-      # 6. 서버에서 배포
-      - name: Unzip and Restart Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_PRIVATE_KEY }}
-          script: |
-            cd /home/ec2-user/Program/Fractarium
-            unzip -o build.zip
+        ssh -o "StrictHostKeyChecking=no" -i "$PRIVATE_KEY" $USERNAME@$HOST << EOF
+          source ~/miniconda3/etc/profile.d/conda.sh
+          conda activate vd
+          mkdir -p $APP_PATH
+          cd $APP_PATH
+          unzip -o app.zip
+          pip install -r requirements.txt
+          nohup streamlit run your_script_name.py --server.port 8501 &
