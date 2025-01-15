@@ -11,7 +11,7 @@ export default {
 	name: "FeatureComponent",
 	data() {
 		return {
-			url: "https://fractarium.com",
+			url: "http://localhost:8501",
 		};
 	},
 };
