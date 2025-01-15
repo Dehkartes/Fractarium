@@ -42,7 +42,7 @@ jobs:
 
       # 6. 서버에서 배포
       - name: Unzip and Restart Server
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USER }}
