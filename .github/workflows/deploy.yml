@@ -32,9 +32,5 @@ jobs:
         username: ${{ secrets.AWS_EC2_USER }}
         key: ${{ secrets.AWS_PRIVATE_KEY }}
         script: |
-          cd /home/ec2-user/Program/VD
-          unzip -o app.zip
-          source ~/miniconda3/etc/profile.d/conda.sh
-          conda activate vd
-          pkill -f "streamlit run main.py" || true
-          nohup streamlit run main.py > /dev/null 2>&1 & disown
+          cd /home/ec2-user/Program
+          ./script.sh
