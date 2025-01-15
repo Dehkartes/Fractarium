@@ -36,4 +36,4 @@ jobs:
           unzip -o app.zip
           source ~/miniconda3/etc/profile.d/conda.sh
           conda activate vd
-          nohup streamlit run your_script_name.py --server.port 8501 &
+          nohup streamlit run main.py &
