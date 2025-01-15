@@ -33,4 +33,4 @@ jobs:
         key: ${{ secrets.AWS_PRIVATE_KEY }}
         script: |
           cd /home/ec2-user/Program
-          ./script.sh
+          ./start.sh
