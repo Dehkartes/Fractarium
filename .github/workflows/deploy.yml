@@ -36,4 +36,5 @@ jobs:
           unzip -o app.zip
           source ~/miniconda3/etc/profile.d/conda.sh
           conda activate vd
+          pkill -f "streamlit run main.py" || true
           nohup streamlit run main.py > streamlit.log 2>&1 &
