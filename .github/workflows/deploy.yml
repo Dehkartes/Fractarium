@@ -16,22 +16,24 @@ jobs:
     - name: Package application
       run: zip -r app.zip .
 
-    - name: Deploy to EC2
-      env:
-        HOST: ${{ secrets.AWS_EC2_HOST }}
-        USERNAME: ${{ secrets.AWS_EC2_USER }}
-        PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
-      run: |
-        APP_PATH="/home/ec2-user/Program/VD"
+    - name: Deploy to AWS EC2
+      uses: appleboy/scp-action@v0.1.5
+      with:
+        host: ${{ secrets.AWS_EC2_HOST }}
+        username: ${{ secrets.AWS_EC2_USER }}
+        key: ${{ secrets.AWS_PRIVATE_KEY }}
+        source: app.zip
+        target: /home/ec2-user/Program/VD
 
-        echo "Connecting to EC2 instance..."
-        scp -o "StrictHostKeyChecking=no" -i "$PRIVATE_KEY" app.zip $USERNAME@$HOST:$APP_PATH/app.zip
-
-        ssh -o "StrictHostKeyChecking=no" -i "$PRIVATE_KEY" $USERNAME@$HOST << EOF
+    - name: Unzip and Restart Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_EC2_HOST }}
+        username: ${{ secrets.AWS_EC2_USER }}
+        key: ${{ secrets.AWS_PRIVATE_KEY }}
+        script: |
+          cd /home/ec2-user/Program/VD
+          unzip -o app.zip
           source ~/miniconda3/etc/profile.d/conda.sh
           conda activate vd
-          mkdir -p $APP_PATH
-          cd $APP_PATH
-          unzip -o app.zip
-          nohup streamlit run your_script_name.py --server.port 8501 & 
-        EOF
+          nohup streamlit run your_script_name.py --server.port 8501 &
