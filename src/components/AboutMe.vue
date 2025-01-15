@@ -1,21 +1,20 @@
 <template>
 	<div>
-		<h2>Feature Component</h2>
-		<p>This component renders an external webpage.</p>
-		<iframe :src="url" class="external-page" frameborder="0"></iframe>
+	  <h1>Streamlit in Vue</h1>
+	  <iframe
+		src="http://localhost:8501"
+		width="100%"
+		height="600"
+		frameborder="0"
+	  ></iframe>
 	</div>
-</template>
-
-<script>
-export default {
-	name: "FeatureComponent",
-	data() {
-		return {
-			url: "http://localhost:8501",
-		};
-	},
-};
-</script>
+  </template>
+  
+  <script>
+  export default {
+	name: "StreamlitEmbed",
+  };
+  </script>
 
 <style>
 .external-page {
