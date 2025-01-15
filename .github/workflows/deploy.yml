@@ -22,7 +22,7 @@ jobs:
         USERNAME: ${{ secrets.AWS_EC2_USER }}
         PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
       run: |
-        APP_PATH="/home/ec2-user/Program/Virtual Dehkartes"
+        APP_PATH="/home/ec2-user/Program/VD"
 
         echo "Connecting to EC2 instance..."
         scp -o "StrictHostKeyChecking=no" -i "$PRIVATE_KEY" app.zip $USERNAME@$HOST:$APP_PATH/app.zip
