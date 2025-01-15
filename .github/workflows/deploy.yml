@@ -1,0 +1,53 @@
+name: Deploy to AWS EC2
+
+on:
+	push:
+		branches:
+			- main # main 브랜치에 push가 발생할 때 실행
+
+jobs:
+	build:
+		runs-on: ubuntu-latest
+
+		steps:
+		# 1. 리포지토리 체크아웃
+		- name: Checkout code
+			uses: actions/checkout@v3
+
+		# 2. Node.js 설정
+		- name: Setup Node.js
+			uses: actions/setup-node@v3
+			with:
+				node-version: '22'
+
+		# 3. 의존성 설치 및 빌드
+		- name: Install dependencies and build
+			run: |
+				npm install
+				npm run build
+
+		# 4. 빌드 파일 압축
+		- name: Zip build folder
+			run: zip -r build.zip dist/
+
+		# 5. 빌드 파일 배포
+		- name: Deploy to AWS EC2
+			uses: appleboy/scp-action@v0.1.5
+			with:
+				host: ${{ secrets.AWS_EC2_HOST }}
+				username: ${{ secrets.AWS_EC2_USER }}
+				key: ${{ secrets.AWS_PRIVATE_KEY }}
+				source: build.zip
+				target: /home/ec2-user/Program/Fractarium
+
+		# 6. 서버에서 배포
+		- name: Unzip and Restart Server
+			uses: appleboy/ssh-action@v0.1.4
+			with:
+				host: ${{ secrets.AWS_EC2_HOST }}
+				username: ${{ secrets.AWS_EC2_USER }}
+				key: ${{ secrets.AWS_PRIVATE_KEY }}
+				script: |
+					cd /home/ec2-user/vue-app/
+					unzip -o build.zip
+					sudo systemctl restart nginx
