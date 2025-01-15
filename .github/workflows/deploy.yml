@@ -33,5 +33,5 @@ jobs:
           mkdir -p $APP_PATH
           cd $APP_PATH
           unzip -o app.zip
-          pip install -r requirements.txt
-          nohup streamlit run your_script_name.py --server.port 8501 &
+          nohup streamlit run your_script_name.py --server.port 8501 & 
+        EOF
