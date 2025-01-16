@@ -32,5 +32,6 @@ jobs:
         username: ${{ secrets.AWS_EC2_USER }}
         key: ${{ secrets.AWS_PRIVATE_KEY }}
         script: |
+          conda activate fractarium
           cd /home/ec2-user/Program
           ./start.sh
