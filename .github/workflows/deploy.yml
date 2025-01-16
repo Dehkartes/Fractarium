@@ -23,7 +23,7 @@ jobs:
         username: ${{ secrets.AWS_EC2_USER }}
         key: ${{ secrets.AWS_PRIVATE_KEY }}
         source: app.zip
-        target: /home/ec2-user/Program/VD
+        target: /home/ec2-user/Program/Fractarium
 
     - name: Unzip and Restart Server
       uses: appleboy/ssh-action@master
